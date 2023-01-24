@@ -14,6 +14,12 @@ import Macchiato from '../assets/Coffees/Macchiato.svg'
 import Mocaccino from '../assets/Coffees/Mocaccino.svg'
 import Quente from '../assets/Coffees/Quente.svg'
 import Americano from '../assets/Coffees/Americano.svg'
+import { Item, itemsReducer } from '../reducers/items/reducer'
+import {
+  addNewItemAction,
+  changeItemAmountAction,
+  removeItemAction,
+} from '../reducers/items/actions'
 
 interface Address {
   zipCode: string
@@ -36,11 +42,6 @@ export interface Coffee {
   name: string
   description: string
   price: number
-}
-
-export interface Item {
-  coffee: Coffee
-  amount: number
 }
 
 export interface Order {
@@ -228,52 +229,11 @@ interface OrderContextProviderProps {
   children: ReactNode
 }
 
-interface ItemsState {
-  items: Item[]
-}
-
 export function OrderContextProvider({ children }: OrderContextProviderProps) {
   const [newClientOrder, setNewClientOrder] =
     useState<OrderContextType['newClientOrder']>()
 
-  const [itemsState, dispatch] = useReducer(
-    (state: ItemsState, action: any) => {
-      if (action.type === 'ADD_NEW_ITEM') {
-        return {
-          ...state,
-          items: [...state.items, action.payload.data],
-        }
-      }
-
-      if (action.type === 'CHANGE_ITEM_AMOUNT') {
-        return {
-          ...state,
-          items: state.items.map((item) => {
-            if (
-              item.coffee.name === action.payload.itemToChangeAmount.coffee.name
-            ) {
-              return { ...item, amount: action.payload.amount + item.amount }
-            } else {
-              return item
-            }
-          }),
-        }
-      }
-
-      if (action.type === 'REMOVE_ITEM') {
-        return {
-          ...state,
-          items: state.items.filter(
-            (item) =>
-              item.coffee.name !== action.payload.itemToRemove.coffee.name,
-          ),
-        }
-      }
-
-      return state
-    },
-    { items: [] },
-  )
+  const [itemsState, dispatch] = useReducer(itemsReducer, { items: [] })
 
   const { items } = itemsState
   const [styleAddedToBag, setStyleAddedToBag] = useState(false)
@@ -283,12 +243,7 @@ export function OrderContextProvider({ children }: OrderContextProviderProps) {
 
   function newItem(data: Item) {
     setStyleAddedToBag(true)
-    dispatch({
-      type: 'ADD_NEW_ITEM',
-      payload: {
-        data,
-      },
-    })
+    dispatch(addNewItemAction(data))
   }
 
   function handleNewClientOrder(data: Order) {
@@ -297,22 +252,11 @@ export function OrderContextProvider({ children }: OrderContextProviderProps) {
 
   function changeAmount(itemToChangeAmount: Item, amount: number) {
     setStyleAddedToBag(true)
-    dispatch({
-      type: 'CHANGE_ITEM_AMOUNT',
-      payload: {
-        itemToChangeAmount,
-        amount,
-      },
-    })
+    dispatch(changeItemAmountAction(itemToChangeAmount, amount))
   }
 
   function removeItem(itemToRemove: Item) {
-    dispatch({
-      type: 'REMOVE_ITEM',
-      payload: {
-        itemToRemove,
-      },
-    })
+    dispatch(removeItemAction(itemToRemove))
   }
 
   return (
