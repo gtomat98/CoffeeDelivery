@@ -7,7 +7,8 @@ import {
 } from './style'
 import { CoffeeItem } from './CoffeeItem'
 import { useContext } from 'react'
-import { Item, OrderContext } from '../../../contexts/OrderContext'
+import { OrderContext } from '../../../contexts/OrderContext'
+import { Item } from '../../../reducers/items/reducer'
 
 export function Aside() {
   const { items } = useContext(OrderContext)
