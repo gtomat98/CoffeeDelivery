@@ -7,7 +7,8 @@ import {
   TrashButton,
 } from './style'
 import { useContext } from 'react'
-import { OrderContext, Item } from '../../../../contexts/OrderContext'
+import { OrderContext } from '../../../../contexts/OrderContext'
+import { Item } from '../../../../reducers/items/reducer'
 
 // data: { coffee: Coffee }
 
